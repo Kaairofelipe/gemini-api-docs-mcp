@@ -1,7 +1,7 @@
 from sqlite_utils import Database
 import sys
 from gemini_docs_mcp.config import DB_PATH
-from gemini_docs_mcp.server import search_documentation
+from gemini_docs_mcp.server import DB_TOP_K
 
 
 def test_search(query: str):
@@ -13,12 +13,12 @@ def test_search(query: str):
              print("Error: 'docs' table not found. Has ingestion run?")
              return
 
-        results = search_documentation([query])
+        results = list(db["docs"].search(query, limit=DB_TOP_K))
         if not results:
             print("No results found.")
             return
 
-        print(f"Found {len(results)} results (showing top 5):")
+        print(f"Found {len(results)} results:")
         for i, r in enumerate(results, 1):
             print(f"\nResult {i}:")
             print(f"Title: {r['title']}")

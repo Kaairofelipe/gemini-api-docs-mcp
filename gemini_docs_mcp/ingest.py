@@ -70,10 +70,11 @@ def get_content_hash(content: str) -> str:
 async def process_link(client: httpx.AsyncClient, db: Database, title: str, url: str, semaphore: asyncio.Semaphore):
     """Processes a single link: fetch, hash, and upsert if changed."""
     async with semaphore:
-        # Check if update is needed
+        stored_url = url.replace(".md.txt", "")
+
         current_hash = None
         try:
-            row = db["docs"].get(url)
+            row = db["docs"].get(stored_url)
             current_hash = row["content_hash"]
         except Exception: # Row not found
             pass
@@ -87,7 +88,7 @@ async def process_link(client: httpx.AsyncClient, db: Database, title: str, url:
         if new_hash != current_hash:
             logger.info(f"Updating {url}")
             db["docs"].upsert({
-                "url": url.replace(".md.txt", ""),
+                "url": stored_url,
                 "title": title,
                 "content": content,
                 "content_hash": new_hash,

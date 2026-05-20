@@ -87,7 +87,7 @@ Configure your MCP client to run the `gemini-docs-mcp` command.
 {
   "mcpServers": {
     "gemini-docs": {
-      "command": "gemini-docs-mcp",
+      "command": "gemini-docs-mcp"
     }
   }
 }
