@@ -84,9 +84,10 @@ Then, call it again with the exact title you need.""",
 def get_capability_page(capability: Annotated[
         str,
         Field(
+            default="",
             description="The EXACT title of the documentation page to retrieve (case-sensitive). If you do not know the exact title, OMIT this argument to receive a master list of all available titles.",
         ),
-    ]) -> str:
+    ] = "") -> str:
     """
     Returns documentation for a specific capability, or a list of available capabilities.
     """
