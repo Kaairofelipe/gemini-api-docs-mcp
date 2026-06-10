@@ -18,7 +18,7 @@ gemini_docs_mcp/
 
 - **`config.py`** – `get_db_path()` reads `GEMINI_DOCS_DB_PATH` env var, falling back to `~/.mcp/gemini-api-docs/database.db`. Creates the parent directory if missing. `DB_PATH` is computed once at import time.
 
-- **`ingest.py`** – `ingest_docs()` is the entry point (also runnable standalone via `python -m gemini_docs_mcp.ingest`):
+- **`ingest.py`** – `ingest_docs()` is the entry point (also runnable standalone via `uv run python -m gemini_docs_mcp.ingest`):
   1. Fetches `LLMS_TXT_URL` (`https://ai.google.dev/gemini-api/docs/llms.txt`) and parses `- [Title](url)` lines via `parse_llms_txt`.
   2. For each link, `process_link` fetches the page (HTML stripped to text via BeautifulSoup, scripts/styles/header/footer/nav removed), hashes the content (SHA256), and **upserts only if the hash changed** — keeps re-ingestion cheap on subsequent server starts.
   3. Concurrency is bounded by `MAX_CONCURRENT_REQUESTS = 20` via an `asyncio.Semaphore`.
@@ -61,7 +61,7 @@ Environment variables:
 
 These are manual/dev scripts, not a pytest suite:
 
-- `verify_db.py` – directly runs FTS searches against the local DB (`db["docs"].search(...)`). Useful for checking ingestion/indexing without spinning up the MCP server. Run with optional query args: `python verify_db.py "function calling" "embeddings"`.
+- `verify_db.py` – directly runs FTS searches against the local DB (`db["docs"].search(...)`). Useful for checking ingestion/indexing without spinning up the MCP server. Run with optional query args: `uv run python verify_db.py "function calling" "embeddings"`.
 - `verify_server.py` – spins up the MCP server as a subprocess via `mcp.client.stdio`, lists tools, and calls `search_documentation`. Good smoke test that the server starts and responds over stdio.
 - `verify_gemini.py` – end-to-end check: connects a real `google-genai` client to the MCP server (as a tool) and asks it to generate code, exercising the full client → MCP → docs DB path.
 
